@@ -5,9 +5,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight } from "lucide-react";
 import { shippingFormSchema, ShippingFormInputs } from "@/types";
 import { useRouter } from "next/navigation";
+import { useShippingStore } from "@/stores/useShippingStore";
 
 export default function ShippingForm() {
     const router = useRouter();
+    const setShippingData = useShippingStore((state) => state.setShippingData);
+
 
     const {
         register,
@@ -19,8 +22,13 @@ export default function ShippingForm() {
 
     const onSubmit = (data: ShippingFormInputs) => {
         console.log("Shipping Data:", data);
+
+        // Save to Zustand Store
+        setShippingData(data);
+
         router.push("/cart?step=2", { scroll: false });
     };
+
 
     return (
         <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>

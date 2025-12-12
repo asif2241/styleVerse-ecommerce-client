@@ -1,7 +1,7 @@
 "use client";
 
 import { SearchIcon } from "lucide-react";
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,10 +20,30 @@ import {
 } from "@/components/ui/popover";
 import ShoppingCartIcon from "./ShopingCartIcon";
 import { mockCategories } from "./shared/mockdata";
+import { useUserStore } from "@/stores/useUserStore";
+import { logoutUser } from "@/services/auth/logoutUser";
+import Link from "next/link";
+import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
 
 export default function PublicNavbar() {
   const id = useId();
   const [openCategory, setOpenCategory] = useState<string | null>(null);
+  // const { user, clearUser, fetchUser } = useUserStore();
+
+  const { data, isLoading, isError } = useUserInfoQuery(undefined); console.log(data);
+  if (isLoading) return <div>Loading...</div>; // optional skeleton
+  const user = data?.data;
+
+  // useEffect(() => {
+  //   if (!user) fetchUser();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
+  // console.log(user);
+
+  const handleLogout = async () => {
+    // Clear Zustand state
+    await logoutUser()
+  };
 
   return (
     <header className="border-b px-4 md:px-6 max-w-[1500px] w-11/12 mx-auto">
@@ -127,7 +147,20 @@ export default function PublicNavbar() {
         {/* Right Side */}
         <div className="flex flex-1 items-center justify-end md:gap-3 gap-2">
           <ShoppingCartIcon />
-          <Button variant="ghost">Login</Button>
+
+          {/* 🔥 CONDITIONAL LOGIN/LOGOUT */}
+          {user ? (
+
+
+            <Button className="ml-[3px]" variant="destructive" size="sm" onClick={handleLogout}>
+              Logout
+            </Button>
+
+          ) : (
+            <Button className="ml-[3px]" asChild variant="ghost">
+              <Link href="/login">Login</Link>
+            </Button>
+          )}
         </div>
       </div>
 

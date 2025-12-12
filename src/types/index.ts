@@ -29,16 +29,47 @@ export type ShippingFormInputs = z.infer<typeof shippingFormSchema>;
 
 // --- Cart Item Type (If you don't have it yet) ---
 // Based on your previous code usage
-export type CartItem = {
-    _id: string;
+// export type CartItemType = {
+//     _id: string;
+//     title: string;
+//     price: number;
+//     images: string[];
+//     selectedSize: string;
+//     selectedColor: number; // Index of the selected image/color
+//     quantity: number;
+//     brand: string;
+//     // ... add other product fields if needed
+// };
+
+// export type CartItemsType = CartItemType[];
+
+
+
+
+
+
+
+export type CartItemType = {
+    productId: string;
     title: string;
+    slug: string;
+    image: string;
     price: number;
-    images: string[];
+    color?: string;
     selectedSize: string;
-    selectedColor: number; // Index of the selected image/color
     quantity: number;
-    brand: string;
-    // ... add other product fields if needed
 };
 
-export type CartItemsType = CartItem[];
+
+export type CartItemsType = CartItemType[];
+
+export type CartStoreStateType = {
+    cart: CartItemsType;
+    hasHydrated: boolean;
+};
+
+export type CartStoreActionsType = {
+    addToCart: (product: CartItemType) => void;
+    removeFromCart: (product: CartItemType) => void;
+    clearCart: () => void;
+};

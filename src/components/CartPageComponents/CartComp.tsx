@@ -3,8 +3,9 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Trash2, ArrowRight } from "lucide-react";
-import { useState } from "react";
 import ShippingForm from "./ShippingForm";
+import { useCartStore } from "@/stores/useCartStore";
+import { useShippingStore } from "@/stores/useShippingStore";
 
 const steps = [
     { id: 1, title: "Shopping Cart" },
@@ -13,28 +14,24 @@ const steps = [
 
 // ❗ Replace this with Zustand cart data later
 // import useCartStore from "@/stores/cartStore"
-// const { cart, removeFromCart } = useCartStore();
-const dummyCart = [
-    {
-        id: "1",
-        name: "Casual Blue Shirt",
-        price: 24.99,
-        quantity: 2,
-        selectedSize: "M",
-        selectedColor: "Blue",
-        images: [
-            "https://res.cloudinary.com/drdaqqxwz/image/upload/v1758546466/samples/shoe.jpg",
-        ],
-    },
-];
+
+
+
 
 export default function CartClient() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const activeStep = parseInt(searchParams.get("step") || "1");
+    const { cart, removeFromCart } = useCartStore();
+    const { shippingData } = useShippingStore();
+    console.log("Shipping Info:", shippingData);
 
-    // Real: const cart = cartStore.cart
-    const cart = dummyCart;
+
+
+
+
+
+
 
     const subtotal = cart.reduce(
         (acc, item) => acc + item.price * item.quantity,
@@ -56,8 +53,8 @@ export default function CartClient() {
                     <div
                         key={step.id}
                         className={`flex flex-col items-center pb-2 border-b-2 ${activeStep === step.id
-                                ? "border-black text-black"
-                                : "border-gray-200 text-gray-400"
+                            ? "border-black text-black"
+                            : "border-gray-200 text-gray-400"
                             }`}
                     >
                         <div
@@ -79,34 +76,42 @@ export default function CartClient() {
                         cart.length > 0 ? (
                             cart.map((item) => (
                                 <div
-                                    key={item.id + item.selectedSize}
+                                    key={item.productId + item.selectedSize}
                                     className="flex items-center justify-between mb-6"
                                 >
-                                    {/* IMAGE + DETAILS */}
                                     <div className="flex items-center gap-4">
                                         <div className="relative w-24 h-24 bg-gray-100 rounded overflow-hidden">
                                             <Image
-                                                src={item.images[0]}
-                                                alt={item.name}
+                                                src={item.image}
+                                                alt={item.title}
                                                 fill
                                                 className="object-contain"
                                             />
                                         </div>
 
                                         <div>
-                                            <p className="font-medium text-sm">{item.name}</p>
-                                            <p className="text-xs text-gray-500">
-                                                Qty: {item.quantity}
-                                            </p>
-                                            <p className="text-xs text-gray-500">
-                                                Size: {item.selectedSize}
-                                            </p>
+                                            <p className="font-medium text-sm">{item.title}</p>
+                                            <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
+                                            <p className="text-xs text-gray-500">Size: {item.selectedSize}</p>
                                             <p className="font-medium mt-1">${item.price}</p>
                                         </div>
                                     </div>
 
-                                    {/* DELETE */}
-                                    <button className="w-8 h-8 rounded-full bg-red-100 text-red-500 flex items-center justify-center">
+                                    <button
+                                        onClick={() =>
+                                            removeFromCart({
+                                                productId: item.productId,
+                                                title: item.title,
+                                                slug: item.slug,
+                                                image: item.image,
+                                                price: item.price,
+                                                color: item.color,
+                                                selectedSize: item.selectedSize,
+                                                quantity: item.quantity,
+                                            })
+                                        }
+                                        className="w-8 h-8 rounded-full bg-red-100 text-red-500 flex items-center justify-center"
+                                    >
                                         <Trash2 size={14} />
                                     </button>
                                 </div>

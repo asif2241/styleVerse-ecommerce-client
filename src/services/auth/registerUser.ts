@@ -7,7 +7,7 @@ import { zodValidator } from "@/lib/zodValidator";
 import { registerUserValidationZodSchema } from "@/zod/auth.validation";
 
 
-export const registerPatient = async (_currentState: any, formData: any): Promise<any> => {
+export const registerUser = async (_currentState: any, formData: any): Promise<any> => {
     try {
         const payload = {
             name: formData.get('name'),
@@ -39,7 +39,7 @@ export const registerPatient = async (_currentState: any, formData: any): Promis
             newFormData.append("file", formData.get("file") as Blob);
         }
 
-        const res = await serverFetch.post("/user/create-patient", {
+        const res = await serverFetch.post("/user/create-register", {
             body: newFormData,
         })
 

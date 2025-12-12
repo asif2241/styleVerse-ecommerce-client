@@ -5,9 +5,44 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
+import { useCartStore } from '@/stores/useCartStore';
+import { toast } from "sonner"
 
 const ProductCard = () => {
     const [isWishlisted, setIsWishlisted] = useState(false);
+    const [selectedSize, setSelectedSize] = useState<string | null>(null);
+
+    const { addToCart, cart } = useCartStore()
+
+    const handleAddToCart = () => {
+        if (!selectedSize) {
+            toast.error("Please select a size!");
+            return;
+        }
+
+        addToCart({
+            productId: product._id,
+            title: product.title,
+            slug: product.slug,
+            image: product.images[0],
+            price: product.discountPrice ? product.discountPrice : product.price,
+            color: product.color,
+            selectedSize,
+            quantity: 1,
+        });
+        // console.log({
+        //     productId: product._id,
+        //     title: product.title,
+        //     slug: product.slug,
+        //     image: product.images[0],
+        //     price: product.discountPrice ? product.discountPrice : product.price,
+        //     color: product.color,
+        //     selectedSize,
+        //     quantity: 1,
+        // });
+    };
+
+    console.log(cart);
 
     const product = {
         _id: "6932b860312fce551b696161",
@@ -110,8 +145,9 @@ const ProductCard = () => {
                     {availableSizes.map((size) => (
                         <Badge
                             key={size}
-                            variant="secondary"
-                            className="text-xs px-2 py-0.5"
+                            variant={selectedSize === size ? "default" : "secondary"}
+                            className="text-xs px-2 py-0.5 cursor-pointer"
+                            onClick={() => setSelectedSize(size)}
                         >
                             {size}
                         </Badge>
@@ -135,7 +171,7 @@ const ProductCard = () => {
             <CardFooter className="p-4 pt-0">
                 <Button
                     className="w-full"
-                    onClick={() => console.log('Add to cart:', product._id)}
+                    onClick={handleAddToCart}
                 >
                     <ShoppingCart className="h-4 w-4 mr-2" />
                     Add to Cart
