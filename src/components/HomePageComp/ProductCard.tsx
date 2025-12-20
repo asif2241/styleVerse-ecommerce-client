@@ -12,7 +12,7 @@ const ProductCard = () => {
     const [isWishlisted, setIsWishlisted] = useState(false);
     const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
-    const { addToCart, cart } = useCartStore()
+    const { addToCart } = useCartStore()
 
     const handleAddToCart = () => {
         if (!selectedSize) {
@@ -42,7 +42,6 @@ const ProductCard = () => {
         // });
     };
 
-    console.log(cart);
 
     const product = {
         _id: "6932b860312fce551b696161",

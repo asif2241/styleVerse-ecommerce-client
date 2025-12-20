@@ -1,84 +1,4 @@
-// "use client";
-// import { loginUser } from "@/services/auth/loginUser";
-// import { useActionState, useEffect } from "react";
-// import { toast } from "sonner";
-// import { Field, FieldDescription, FieldGroup, FieldLabel } from "../ui/field";
-// import { Input } from "../ui/input";
-// import InputFieldError from "../shared/InputFieldError";
-// import { Button } from "../ui/button";
-// import { useLoginMutation } from "@/redux/features/auth/auth.api";
 
-// const LoginForm = ({ redirect }: { redirect?: string }) => {
-
-//     const [login] = useLoginMutation();
-//     const [state, formAction, isPending] = useActionState(loginUser, null);
-
-//     useEffect(() => {
-//         if (state && !state.success && state.message) {
-//             toast.error(state.message);
-//         }
-//     }, [state]);
-
-//     return (
-//         <form action={formAction}>
-//             {redirect && <input type="hidden" name="redirect" value={redirect} />}
-//             <FieldGroup>
-//                 <div className="grid grid-cols-1 gap-4">
-//                     {/* Email */}
-//                     <Field>
-//                         <FieldLabel htmlFor="email">Email</FieldLabel>
-//                         <Input
-//                             id="email"
-//                             name="email"
-//                             type="email"
-//                             placeholder="m@example.com"
-//                         //   required
-//                         />
-
-//                         <InputFieldError field="email" state={state} />
-//                     </Field>
-
-//                     {/* Password */}
-//                     <Field>
-//                         <FieldLabel htmlFor="password">Password</FieldLabel>
-//                         <Input
-//                             id="password"
-//                             name="password"
-//                             type="password"
-//                             placeholder="Enter your password"
-//                         //   required
-//                         />
-//                         <InputFieldError field="password" state={state} />
-//                     </Field>
-//                 </div>
-//                 <FieldGroup className="mt-4">
-//                     <Field>
-//                         <Button type="submit" disabled={isPending}>
-//                             {isPending ? "Logging in..." : "Login"}
-//                         </Button>
-
-//                         <FieldDescription className="px-6 text-center">
-//                             Don&apos;t have an account?{" "}
-//                             <a href="/register" className="text-blue-600 hover:underline">
-//                                 Sign up
-//                             </a>
-//                         </FieldDescription>
-//                         <FieldDescription className="px-6 text-center">
-//                             <a
-//                                 href="/forgot-password"
-//                                 className="text-blue-600 hover:underline"
-//                             >
-//                                 Forgot password?
-//                             </a>
-//                         </FieldDescription>
-//                     </Field>
-//                 </FieldGroup>
-//             </FieldGroup>
-//         </form>
-//     );
-// };
-
-// export default LoginForm;
 "use client"
 import { Button } from "@/components/ui/button";
 import {
@@ -91,7 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { useLoginMutation } from "@/redux/features/auth/auth.api";
+import { useLoginMutation, useUserInfoQuery } from "@/redux/features/auth/auth.api";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
@@ -101,6 +21,10 @@ export function LoginForm({
     className,
     ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
+    const { data, isLoading } = useUserInfoQuery(undefined);
+    const user = data?.data;
+    const userRole = user?.role; // Assuming user data includes a `role` 
+    console.log(userRole);
     const router = useRouter()
     const form = useForm({
         //! For development only
