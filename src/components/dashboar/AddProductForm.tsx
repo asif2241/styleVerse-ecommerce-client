@@ -38,8 +38,9 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
 // Assuming this path is correct for your mock data
-import { Category, mockCategories } from "../shared/mockdata";
 import { useAddProductMutation } from "@/redux/features/product/product.api";
+import { useAllCategoryQuery } from "@/redux/features/category/category.api";
+import { Category } from "@/types";
 
 
 // --- Custom Interfaces & Enums (Matches your Mongoose schema) ---
@@ -57,7 +58,7 @@ interface CategoryOption {
 const flattenCategories = (categories: Category[]): CategoryOption[] => {
   const options: CategoryOption[] = [];
 
-  categories.forEach(parent => {
+  categories?.forEach(parent => {
     // Handle Primary Categories (e.g., KIDS) that have no children but are selectable
     if (parent.children.length === 0) {
       options.push({
@@ -145,7 +146,11 @@ export default function AddProductForm() {
   const [images, setImages] = useState<(File | FileMetadata)[] | []>([]);
 
   const [addProduct, { isLoading: isAddingProduct }] = useAddProductMutation();
-  const categoryOptions = flattenCategories(mockCategories);
+  const { data: categoryData } = useAllCategoryQuery(undefined);
+  const categories: Category[] = categoryData?.data
+
+
+  const categoryOptions = flattenCategories(categories);
 
   // Use FormInputValues as the generic type to fix the RHF/Zod validation error
   const form = useForm<ProductFormValues>({

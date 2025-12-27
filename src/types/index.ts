@@ -73,3 +73,10 @@ export type CartStoreActionsType = {
     removeFromCart: (product: CartItemType) => void;
     clearCart: () => void;
 };
+
+//this is for category maping in the PublicNavbar
+export interface Category {
+    _id: string;
+    name: string;
+    children: Category[];
+}

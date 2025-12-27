@@ -1,11 +1,24 @@
 import ProductDetails from "@/components/DetailsPageComp/ProductDetails";
+import { IProduct } from "@/types/product.interface";
+
+type Props = {
+    params: { slug: string };
+};
+
+export default async function ProductDetailsPage({ params }: Props) {
+    const { slug } = await params
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}/products/${slug}`
+        //     , {
+        //     next: { revalidate: 60 }, // ISR: regenerate every hour
+        // }
+    );
 
 
-
-export default function ProductDetailsPage() {
+    const data = await res.json();
+    const product: IProduct = data.data;
     return (
         <>
-            <ProductDetails></ProductDetails>
+            <ProductDetails product={product}></ProductDetails>
         </>
     );
 }

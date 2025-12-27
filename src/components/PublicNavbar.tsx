@@ -2,6 +2,7 @@
 
 import { SearchIcon } from "lucide-react";
 import { useId, useState } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   NavigationMenuContent,
-  navigationMenuTriggerStyle, // Import this for easy styling
+  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import {
   Popover,
@@ -20,48 +21,48 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import ShoppingCartIcon from "./ShopingCartIcon";
-import { mockCategories } from "./shared/mockdata";
 import Link from "next/link";
 import { authApi, useLogoutMutation, useUserInfoQuery } from "@/redux/features/auth/auth.api";
 import { useAppDispatch } from "@/redux/hook";
 import { Role } from "@/types/user.interface";
-
-// --- Helper Functions for Dashboard Link ---
-
-/**
- * Determines the correct dashboard path based on the user's role.
- * User folders suggest: (dashboardLayout)/admin/dashboard and (userDashboardLayout)/dashboard
- */
-const getDashboardPath = (role?: string | null) => {
-  // Check for ADMIN role based on your file structure (image_ad4e80.png)
-  if (role === "ADMIN") {
-    return "/admin/dashboard";
-  }
-  // Default to user dashboard based on your file structure (image_ac4f9c.png)
-  return "/dashboard";
-};
-
-// ------------------------------------------
+import { useAllCategoryQuery } from "@/redux/features/category/category.api";
+import { Category } from "@/types";
 
 export default function PublicNavbar() {
   const id = useId();
   const [openCategory, setOpenCategory] = useState<string | null>(null);
 
+  // Next.js Navigation Hooks
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const { data, isLoading } = useUserInfoQuery(undefined);
+  const { data: categoryData } = useAllCategoryQuery(undefined);
   const dispatch = useAppDispatch();
   const [logout] = useLogoutMutation();
 
-  // NOTE: You should handle `isLoading` gracefully, perhaps with a Skeleton.
   if (isLoading) return null;
 
+  const categories: Category[] = categoryData?.data;
   const user = data?.data;
-  const userRole = user?.role; // Assuming user data includes a `role` field
 
   const handleLogout = async () => {
     await logout(undefined);
     dispatch(authApi.util.resetApiState());
   };
 
+  /**
+   * Filter Handler
+   * Updates the URL search params instead of navigating to a new route
+   */
+  const handleCategoryFilter = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("category", value.toUpperCase());
+
+    // Update the URL. { scroll: false } prevents the page from jumping to top
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   return (
     <nav className="border-b px-4 md:px-6 max-w-[1500px] w-11/12 mx-auto ">
@@ -94,12 +95,13 @@ export default function PublicNavbar() {
               </Button>
             </PopoverTrigger>
 
-            {/* MOBILE CATEGORY MENU (Combined with new links) */}
             <PopoverContent align="start" className="w-56 p-2 md:hidden">
               <div className="flex flex-col gap-2">
-                {/* 🔥 ADDED LINKS HERE (Mobile) */}
                 <Link href="/about" className="w-full text-left font-semibold py-1">
                   About Us
+                </Link>
+                <Link href="/products" className="w-full text-left font-semibold py-1">
+                  All Items
                 </Link>
                 <Link href="/contact" className="w-full text-left font-semibold py-1">
                   Contact Us
@@ -111,8 +113,7 @@ export default function PublicNavbar() {
                 )}
                 <div className="border-t my-2"></div>
 
-                {/* Existing Category Loop */}
-                {mockCategories.map((cat) => (
+                {categories?.map((cat) => (
                   <div key={cat._id}>
                     <button
                       onClick={() =>
@@ -125,31 +126,28 @@ export default function PublicNavbar() {
                       {cat.name}
                     </button>
 
-                    {/* Show children when expanded */}
                     {openCategory === cat._id && (
                       <div className="ml-3 flex flex-col gap-1 border-l pl-3">
-
-                        {/* ALL link */}
-                        <a
-                          href={`/category/${cat.name.toLowerCase()}`}
-                          className="text-primary font-medium"
+                        {/* Mobile "ALL" Filter */}
+                        <button
+                          onClick={() => handleCategoryFilter(cat.name)}
+                          className="text-left text-primary font-medium"
                         >
                           ALL {cat.name}
-                        </a>
+                        </button>
 
-                        {/* Child links */}
+                        {/* Mobile Child Filters */}
                         {cat.children.map((child) => (
-                          <a
+                          <button
                             key={child._id}
-                            href={`/category/${child.name.toLowerCase()}`}
-                            className="text-sm text-muted-foreground hover:text-primary"
+                            onClick={() => handleCategoryFilter(child.name)}
+                            className="text-left text-sm text-muted-foreground hover:text-primary"
                           >
                             {child.name}
-                          </a>
+                          </button>
                         ))}
                       </div>
                     )}
-
                   </div>
                 ))}
               </div>
@@ -157,12 +155,12 @@ export default function PublicNavbar() {
           </Popover>
 
           {/* Logo */}
-          <a className="text-primary hover:text-primary/90" href="#">
+          <Link className="text-primary hover:text-primary/90" href="/">
             <span className="text-xl font-bold text-gray-900">StyleVerse</span>
-          </a>
+          </Link>
         </div>
 
-        {/* Center Search (Unchanged) */}
+        {/* Center Search */}
         <div className="grow">
           <div className="relative mx-auto w-full max-w-xs">
             <Input
@@ -177,21 +175,14 @@ export default function PublicNavbar() {
           </div>
         </div>
 
-        {/* Right Side (Unchanged) */}
+        {/* Right Side */}
         <div className="flex flex-1 items-center justify-end md:gap-3 gap-2">
           <ShoppingCartIcon />
-
-          {/* CONDITIONAL LOGIN/LOGOUT */}
-          {user?.email && (
-            <Button
-              onClick={handleLogout}
-              variant="outline"
-              className="text-sm"
-            >
+          {user?.email ? (
+            <Button onClick={handleLogout} variant="outline" className="text-sm">
               Logout
             </Button>
-          )}
-          {!user?.email && (
+          ) : (
             <Button asChild className="text-sm">
               <Link href="/login">Login</Link>
             </Button>
@@ -203,8 +194,6 @@ export default function PublicNavbar() {
       <div className="border-t py-2 max-md:hidden">
         <NavigationMenu>
           <NavigationMenuList className="gap-4">
-
-            {/* ✅ FIXED: About Us */}
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
                 <Link href="/about" className={navigationMenuTriggerStyle()}>
@@ -213,7 +202,6 @@ export default function PublicNavbar() {
               </NavigationMenuLink>
             </NavigationMenuItem>
 
-            {/* ✅ FIXED: Contact Us */}
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
                 <Link href="/contact" className={navigationMenuTriggerStyle()}>
@@ -221,8 +209,14 @@ export default function PublicNavbar() {
                 </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Link href="/products" className={navigationMenuTriggerStyle()}>
+                  All Items
+                </Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
 
-            {/* ✅ FIXED: Dashboard Link */}
             {user?.role === Role.SUPER_ADMIN && (
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
@@ -236,8 +230,8 @@ export default function PublicNavbar() {
               </NavigationMenuItem>
             )}
 
-            {/* Existing Category Loop */}
-            {mockCategories.map((cat) => (
+            {/* CATEGORY FILTER LOGIC */}
+            {categories?.map((cat) => (
               <NavigationMenuItem key={cat._id}>
                 {cat.children.length > 0 ? (
                   <>
@@ -246,40 +240,40 @@ export default function PublicNavbar() {
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
                       <div className="p-4 grid gap-2 min-w-[200px]">
-                        {/* ALL Category Link */}
-                        <NavigationMenuLink asChild>
-                          <Link
-                            href={`/category/${cat.name.toLowerCase()}`}
-                            className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground font-semibold text-primary"
-                          >
-                            ALL {cat.name}
-                          </Link>
-                        </NavigationMenuLink>
+                        {/* ALL Category Filter Button */}
+                        <div
+                          role="button"
+                          onClick={() => handleCategoryFilter(cat.name)}
+                          className="cursor-pointer block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground font-semibold text-primary"
+                        >
+                          ALL {cat.name}
+                        </div>
+
                         <div className="border-b my-2"></div>
-                        {/* Child categories */}
+
+                        {/* Child Category Filter Buttons */}
                         {cat.children.map((child) => (
-                          <NavigationMenuLink asChild key={child._id}>
-                            <Link
-                              href={`/category/${child.name.toLowerCase()}`}
-                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground text-sm text-muted-foreground"
-                            >
-                              {child.name}
-                            </Link>
-                          </NavigationMenuLink>
+                          <div
+                            key={child._id}
+                            role="button"
+                            onClick={() => handleCategoryFilter(child.name)}
+                            className="cursor-pointer block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground text-sm text-muted-foreground"
+                          >
+                            {child.name}
+                          </div>
                         ))}
                       </div>
                     </NavigationMenuContent>
                   </>
                 ) : (
                   /* Category with no children */
-                  <NavigationMenuLink asChild>
-                    <Link
-                      href={`/category/${cat.name.toLowerCase()}`}
-                      className="font-medium block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground"
-                    >
-                      {cat.name}
-                    </Link>
-                  </NavigationMenuLink>
+                  <div
+                    role="button"
+                    onClick={() => handleCategoryFilter(cat.name)}
+                    className="cursor-pointer font-medium block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground"
+                  >
+                    {cat.name}
+                  </div>
                 )}
               </NavigationMenuItem>
             ))}

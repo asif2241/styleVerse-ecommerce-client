@@ -1,13 +1,13 @@
+import AllItemsSection from "@/components/AllProductsPageComponents/AllItemsSection";
+import { HomeCarousel } from "@/components/HomePageComp/HomeCarousel";
 
 
 
 export default function AllProductsPage() {
     return (
-        <>
-            {/* <Head>
-      
-      </Head> */}
-
-        </>
+        <div>
+            {/* <HomeCarousel></HomeCarousel> */}
+            <AllItemsSection></AllItemsSection>
+        </div>
     );
 }

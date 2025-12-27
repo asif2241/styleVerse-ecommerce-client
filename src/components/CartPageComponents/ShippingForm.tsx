@@ -6,10 +6,13 @@ import { ArrowRight } from "lucide-react";
 import { shippingFormSchema, ShippingFormInputs } from "@/types";
 import { useRouter } from "next/navigation";
 import { useShippingStore } from "@/stores/useShippingStore";
+import { useCartStore } from "@/stores/useCartStore";
 
 export default function ShippingForm() {
     const router = useRouter();
     const setShippingData = useShippingStore((state) => state.setShippingData);
+    const { cart } = useCartStore()
+    console.log(cart);
 
 
     const {
