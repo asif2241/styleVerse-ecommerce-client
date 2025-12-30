@@ -22,6 +22,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import ProductCard from "../HomePageComp/ProductCard";
+import PaginationComp from "../shared/PaginationComp";
 
 export default function AllItemsSection() {
     const router = useRouter();
@@ -35,6 +36,7 @@ export default function AllItemsSection() {
     const maxPrice = searchParams.get("maxPrice") || "";
     const limit = searchParams.get("limit") || "12";
     const search = searchParams.get("search") || "";
+    const page = searchParams.get("page") || "1";
 
     // 2. Local state initialized DIRECTLY from URL values
     // This removes the need for useEffect to "sync" them
@@ -44,8 +46,7 @@ export default function AllItemsSection() {
 
     // This key will force a re-render of the inputs when filters are cleared
     const filterKey = `${minPrice}-${maxPrice}-${search}`;
-
-    const hasActiveFilters = !!(minPrice || maxPrice || search || category);
+    const hasActiveFilters = !!(minPrice || maxPrice || search || category || page !== "1");
 
     // 3. API Query
     const { data, isLoading, isFetching } = useGetAllProductsQuery({
@@ -54,14 +55,18 @@ export default function AllItemsSection() {
         minPrice: minPrice || undefined,
         maxPrice: maxPrice || undefined,
         limit,
-        search: search || undefined
+        search: search || undefined,
+        page
     });
 
     const products: IProduct[] = data?.data || [];
 
     const updateFilter = (updates: Record<string, string | undefined>) => {
         const params = new URLSearchParams(searchParams.toString());
-        params.delete("page");
+        // Logic: If we are changing filters (not the page), reset back to page 1
+        if (!updates.page) {
+            params.delete("page");
+        }
 
         Object.entries(updates).forEach(([key, value]) => {
             if (value && value !== "") {
@@ -78,6 +83,14 @@ export default function AllItemsSection() {
         e.preventDefault();
         updateFilter({ search: localSearch });
     };
+
+    // Handle page change
+    const handlePageChange = (newPage: number) => {
+        updateFilter({ page: newPage.toString() });
+        // Scroll to top of grid when page changes
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
 
     const handlePriceApply = (e: React.FormEvent) => {
         e.preventDefault();
@@ -233,6 +246,9 @@ export default function AllItemsSection() {
                                 </Button>
                             </div>
                         )}
+                    </div>
+                    <div className="my-5">
+                        <PaginationComp currentPage={data?.meta?.page} totalPages={data?.meta?.totalPage} paginationItemsToDisplay={5} onPageChange={handlePageChange}></PaginationComp>
                     </div>
                 </main>
             </div>
