@@ -13,9 +13,25 @@ export const productApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: ["ORDERS"]
         }),
+        getAllOrders: builder.query({
+            query: (params) => ({
+                url: "/order/all-orders",
+                method: "GET",
+                params
+            }),
+            providesTags: ["ORDERS"]
+        }),
+        getSingleOrder: builder.query({
+            query: ({ orderId }) => ({
+                url: `/order/${orderId}`,
+                method: "GET",
+            })
+        }),
     }),
 });
 
 export const {
-    useCreateOrderMutation
+    useCreateOrderMutation,
+    useGetAllOrdersQuery,
+    useGetSingleOrderQuery
 } = productApi;

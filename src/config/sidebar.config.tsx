@@ -9,7 +9,7 @@ export const dashboardLinks = [
   },
   {
     label: "Manage Users",
-    href: "/admin/dashboard/manage-user",
+    href: "/admin/dashboard/manage-users",
     icon: UserCog,
   },
   {
@@ -21,6 +21,16 @@ export const dashboardLinks = [
     label: "Add Product",
     href: "/admin/dashboard/add-product",
     icon: PlusCircle,
+  },
+  {
+    label: "Manage Products",
+    href: "/admin/dashboard/manage-products",
+    icon: Settings,
+  },
+  {
+    label: "Manage Orders",
+    href: "/admin/dashboard/manage-orders",
+    icon: Settings
   },
   // You can easily add more here later
   {

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ShoppingBag, User, Heart, Settings } from 'lucide-react';
+import { RecentOrdersSection } from '@/components/shared/RecentOrderSection';
 
 export default function UserDashboardPage() {
     return (
@@ -43,11 +44,7 @@ export default function UserDashboardPage() {
                 </div>
 
                 {/* Mock Recent Order Item */}
-                <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-                    <p className="text-sm font-medium">Order #ORD-2023-554</p>
-                    <p className="text-xs text-gray-500">Placed on Oct 10, 2023</p>
-                    <p className="text-lg font-bold mt-1 text-green-600">Status: Shipped</p>
-                </div>
+                <RecentOrdersSection></RecentOrdersSection>
             </section>
         </div>
     );

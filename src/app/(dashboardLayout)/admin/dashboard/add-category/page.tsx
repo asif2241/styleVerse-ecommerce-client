@@ -1,8 +1,11 @@
+import CreateCategoryForm from "@/components/dashboar/AddCategoryForm";
 
 const AddCategoryPage = () => {
     return (
         <div className="w-full flex justify-center">
-            <p>category page</p>
+
+            <CreateCategoryForm></CreateCategoryForm>
+
         </div>
     );
 };

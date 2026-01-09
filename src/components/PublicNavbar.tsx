@@ -1,6 +1,6 @@
 "use client";
 
-import { SearchIcon } from "lucide-react";
+import { LayoutDashboard, LogOutIcon, SearchIcon, Snail } from "lucide-react";
 import { useId, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
@@ -37,6 +37,12 @@ export default function PublicNavbar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const CATEGORY_VISIBLE_ROUTES = ["/", "/products"];
+
+  const showCategories = CATEGORY_VISIBLE_ROUTES.some(route =>
+    pathname === route || pathname.startsWith(`${route}/`)
+  );
+
   const { data, isLoading } = useUserInfoQuery(undefined);
   const { data: categoryData } = useAllCategoryQuery(undefined);
   const dispatch = useAppDispatch();
@@ -44,8 +50,18 @@ export default function PublicNavbar() {
 
   if (isLoading) return null;
 
+
+
   const categories: Category[] = categoryData?.data;
   const user = data?.data;
+
+  const dashboardHref =
+    user?.role === Role.USER
+      ? "/dashboard"
+      : [Role.ADMIN, Role.SUPER_ADMIN].includes(user?.role)
+        ? "/admin/dashboard"
+        : null;
+
 
   const handleLogout = async () => {
     await logout(undefined);
@@ -113,7 +129,7 @@ export default function PublicNavbar() {
                 )}
                 <div className="border-t my-2"></div>
 
-                {categories?.map((cat) => (
+                {showCategories && categories?.map((cat) => (
                   <div key={cat._id}>
                     <button
                       onClick={() =>
@@ -160,7 +176,7 @@ export default function PublicNavbar() {
           </Link>
         </div>
 
-        {/* Center Search */}
+        {/* Center Search
         <div className="grow">
           <div className="relative mx-auto w-full max-w-xs">
             <Input
@@ -173,14 +189,26 @@ export default function PublicNavbar() {
               <SearchIcon size={16} />
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Right Side */}
-        <div className="flex flex-1 items-center justify-end md:gap-3 gap-2">
+        <div className="flex flex-1 items-center justify-end md:gap-5 gap-4">
           <ShoppingCartIcon />
+
+          {dashboardHref && (
+            <Link
+              href={dashboardHref}
+              className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold text-primary hover:bg-accent"
+            >
+              <LayoutDashboard className="h-4 w-4" />
+              <span className="hidden md:inline">Dashboard</span>
+            </Link>
+          )}
+
           {user?.email ? (
             <Button onClick={handleLogout} variant="outline" className="text-sm">
-              Logout
+              <span><LogOutIcon></LogOutIcon></span>
+              <span className="max-md:hidden">Logout</span>
             </Button>
           ) : (
             <Button asChild className="text-sm">
@@ -217,7 +245,8 @@ export default function PublicNavbar() {
               </NavigationMenuLink>
             </NavigationMenuItem>
 
-            {user?.role === Role.SUPER_ADMIN && (
+            {/* navigation to admin dashboard */}
+            {/* {(user?.role === Role.SUPER_ADMIN || user?.role === Role.ADMIN) && (
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
                   <Link
@@ -228,10 +257,23 @@ export default function PublicNavbar() {
                   </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
-            )}
+            )} */}
+            {/* navigation to user dashboard */}
+            {/* {user?.role === Role.USER && (
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/dashboard"
+                    className={`${navigationMenuTriggerStyle()} font-semibold text-primary`}
+                  >
+                    Dashboard
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            )} */}
 
             {/* CATEGORY FILTER LOGIC */}
-            {categories?.map((cat) => (
+            {showCategories && categories?.map((cat) => (
               <NavigationMenuItem key={cat._id}>
                 {cat.children.length > 0 ? (
                   <>

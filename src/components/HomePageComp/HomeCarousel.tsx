@@ -17,6 +17,7 @@ import {
 import Image1 from "@/assets/images/1676.jpg"; // Replace with your image paths
 import Image2 from "@/assets/images/1985.jpg";
 import Image3 from "@/assets/images/8886.jpg";
+import Link from "next/link";
 
 // Define slide data with professional e-commerce content
 const SLIDE_DATA = [
@@ -90,10 +91,12 @@ export function HomeCarousel() {
                                 <p className="text-base md:text-lg lg:text-xl opacity-90">
                                     {slide.description}
                                 </p>
-                                <Button size="lg" className="font-semibold">
-                                    {slide.buttonText}
-                                    {slide.buttonIcon}
-                                </Button>
+                                <Link href={`/products`}>
+                                    <Button size="lg" className="font-semibold cursor-pointer">
+                                        {slide.buttonText}
+                                        {slide.buttonIcon}
+                                    </Button>
+                                </Link>
                             </div>
                         </div>
                     </CarouselItem>

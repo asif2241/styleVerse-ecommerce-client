@@ -29,7 +29,7 @@ export const authApi = baseApi.injectEndpoints({
             query: (userInfo) => ({
                 url: "/user/register",
                 method: "POST",
-                data: userInfo,
+                body: userInfo,
             }),
         }),
 

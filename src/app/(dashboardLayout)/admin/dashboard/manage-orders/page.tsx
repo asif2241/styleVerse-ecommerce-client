@@ -1,6 +1,6 @@
 import AllOrdersTable from "@/components/shared/AllOrdersTable";
 
-export default function OrderHistoryPage() {
+export default function ManageOrdersPage() {
     return (
         <div>
             <AllOrdersTable></AllOrdersTable>

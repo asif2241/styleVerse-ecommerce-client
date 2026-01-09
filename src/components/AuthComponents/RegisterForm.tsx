@@ -1,86 +1,191 @@
-"use client"
-import { useActionState, useEffect } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import z from "zod";
 import { toast } from "sonner";
-import { registerUser } from "@/services/auth/registerUser";
-import { Button } from "../ui/button";
-import { Field, FieldDescription, FieldGroup, FieldLabel } from "../ui/field";
-import { Input } from "../ui/input";
-import InputFieldError from "../shared/InputFieldError";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Loader2 } from "lucide-react";
 
-export default function RegisterForm() {
-  const [state, formAction, isPending] = useActionState(registerUser, null);
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { cn } from "@/lib/utils";
+import { useRegisterMutation } from "@/redux/features/auth/auth.api";
 
-  useEffect(() => {
-    if (state && !state.success && state.message) {
-      toast.error(state.message);
+// Validation Schema
+const registerSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  address: z.string().min(5, "Address is required"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  confirmPassword: z.string()
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+});
+
+type RegisterValues = z.infer<typeof registerSchema>;
+
+export default function RegisterForm({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  const router = useRouter();
+  const [register, { isLoading }] = useRegisterMutation();
+
+  const form = useForm<RegisterValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      address: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  const onSubmit = async (values: RegisterValues) => {
+    const toastId = toast.loading("Creating your account...");
+
+    // Remove confirmPassword before sending to backend
+    const { confirmPassword, ...registerData } = values;
+    console.log(registerData);
+    try {
+      const res = await register(registerData).unwrap();
+
+      if (res.success) {
+        toast.success("Account created! Please login.", { id: toastId });
+        router.push("/login");
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err?.data?.message || "Registration failed", { id: toastId });
     }
-  }, [state]);
+  };
+
   return (
-    <form action={formAction}>
-      <FieldGroup>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Name */}
-          <Field>
-            <FieldLabel htmlFor="name">Full Name</FieldLabel>
-            <Input id="name" name="name" type="text" placeholder="John Doe" />
-            <InputFieldError field="name" state={state} />
-          </Field>
-          {/* Address */}
-          <Field>
-            <FieldLabel htmlFor="address">Address</FieldLabel>
-            <Input
-              id="address"
-              name="address"
-              type="text"
-              placeholder="123 Main St"
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <div className="flex flex-col items-center gap-2 text-center">
+        <h1 className="text-2xl font-bold tracking-tight">Create an account</h1>
+        <p className="text-sm text-gray-500">
+          Join StyleVerse today and start shopping.
+        </p>
+      </div>
+
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-6 bg-white p-8 rounded-xl border shadow-sm"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Name */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="uppercase text-xs font-bold text-gray-500">Full Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="John Doe" {...field} className="rounded-none border-t-0 border-x-0 border-b focus-visible:ring-0 px-0" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            <InputFieldError field="address" state={state} />
-          </Field>
-          {/* Email */}
-          <Field>
-            <FieldLabel htmlFor="email">Email</FieldLabel>
-            <Input
-              id="email"
+
+            {/* Email */}
+            <FormField
+              control={form.control}
               name="email"
-              type="email"
-              placeholder="m@example.com"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="uppercase text-xs font-bold text-gray-500">Email Address</FormLabel>
+                  <FormControl>
+                    <Input placeholder="john@example.com" {...field} className="rounded-none border-t-0 border-x-0 border-b focus-visible:ring-0 px-0" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            <InputFieldError field="email" state={state} />
-          </Field>
-          {/* Password */}
-          <Field>
-            <FieldLabel htmlFor="password">Password</FieldLabel>
-            <Input id="password" name="password" type="password" />
 
-            <InputFieldError field="password" state={state} />
-          </Field>
-          {/* Confirm Password */}
-          <Field className="md:col-span-2">
-            <FieldLabel htmlFor="confirmPassword">Confirm Password</FieldLabel>
-            <Input
-              id="confirmPassword"
+            {/* Address */}
+            <div className="md:col-span-2">
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="uppercase text-xs font-bold text-gray-500">Shipping Address</FormLabel>
+                    <FormControl>
+                      <Input placeholder="123 Street, Dhaka" {...field} className="rounded-none border-t-0 border-x-0 border-b focus-visible:ring-0 px-0" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Password */}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="uppercase text-xs font-bold text-gray-500">Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="********" {...field} className="rounded-none border-t-0 border-x-0 border-b focus-visible:ring-0 px-0" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Confirm Password */}
+            <FormField
+              control={form.control}
               name="confirmPassword"
-              type="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="uppercase text-xs font-bold text-gray-500">Confirm Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="********" {...field} className="rounded-none border-t-0 border-x-0 border-b focus-visible:ring-0 px-0" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
+          </div>
 
-            <InputFieldError field="confirmPassword" state={state} />
-          </Field>
-        </div>
-        <FieldGroup className="mt-4">
-          <Field>
-            <Button type="submit" disabled={isPending}>
-              {isPending ? "Creating Account..." : "Create Account"}
-            </Button>
+          <Button
+            disabled={isLoading}
+            type="submit"
+            className="w-full bg-black h-12 text-white font-bold hover:bg-zinc-800 transition-all mt-4"
+          >
+            {isLoading ? (
+              <Loader2 className="animate-spin mr-2" />
+            ) : (
+              "CREATE ACCOUNT"
+            )}
+          </Button>
 
-            <FieldDescription className="px-6 text-center">
-              Already have an account?{" "}
-              <a href="/login" className="text-blue-600 hover:underline">
-                Sign in
-              </a>
-            </FieldDescription>
-          </Field>
-        </FieldGroup>
-      </FieldGroup>
-    </form>
+          <div className="text-center text-sm">
+            Already have an account?{" "}
+            <Link
+              href="/login"
+              className="underline underline-offset-4 font-medium hover:text-black transition-colors"
+            >
+              Sign in
+            </Link>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 }
