@@ -1,7 +1,12 @@
 // config/userDashboardInfo.ts (or inside the component)
-import { LayoutDashboard, ShoppingBag, User, Heart, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, ShoppingBag, User, Heart, Settings, LogOut, Home } from "lucide-react";
 
 export const userDashboardLinks = [
+    {
+        label: "Home",
+        href: "/",
+        icon: Home
+    },
     {
         label: "Dashboard",
         href: "/dashboard",
@@ -18,16 +23,16 @@ export const userDashboardLinks = [
         href: "/dashboard/profile",
         icon: User,
     },
-    {
-        label: "Wishlist",
-        href: "/dashboard/wishlist",
-        icon: Heart,
-    },
-    {
-        label: "Settings",
-        href: "/dashboard/settings",
-        icon: Settings,
-    },
+    // {
+    //     label: "Wishlist",
+    //     href: "/dashboard/wishlist",
+    //     icon: Heart,
+    // },
+    // {
+    //     label: "Settings",
+    //     href: "/dashboard/settings",
+    //     icon: Settings,
+    // },
 ];
 
 // Optional: A separate link for logout

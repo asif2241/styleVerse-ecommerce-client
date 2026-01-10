@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
+import DashboardPage from "@/app/(dashboardLayout)/admin/dashboard/page";
 import { useUserInfoQuery } from "@/redux/features/auth/auth.api";
 import { useGetAllOrdersQuery } from "@/redux/features/order/order.api";
 import { Role } from "@/types/user.interface";
@@ -61,9 +62,13 @@ export const RecentOrdersSection = () => {
                 <p className="text-gray-500 text-sm py-4">No recent orders found.</p>
             )}
 
-            <Link href={OrderPageHref as string} className="mt-4 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-800">
-                View All Orders &rarr;
-            </Link>
+            {
+                OrderPageHref && (
+                    <Link href={OrderPageHref as string} className="mt-4 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-800">
+                        View All Orders &rarr;
+                    </Link>
+                )
+            }
         </div>
     );
 };

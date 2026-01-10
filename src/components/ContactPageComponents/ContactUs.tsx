@@ -2,6 +2,9 @@
 
 import React from "react";
 import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner"; // Or your preferred toast library like "react-hot-toast"
 import {
     Facebook,
     Twitter,
@@ -24,8 +27,21 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 
+// 1. Define the Zod Schema
+const contactFormSchema = z.object({
+    name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+    email: z.string().email({ message: "Please enter a valid email address." }),
+    subject: z.string().min(5, { message: "Subject must be at least 5 characters." }),
+    message: z.string().min(10, { message: "Message must be at least 10 characters." }),
+});
+
+// 2. Extract the Type
+type ContactFormValues = z.infer<typeof contactFormSchema>;
+
 export default function ContactUs() {
-    const form = useForm({
+    // 3. Initialize the form with Resolver
+    const form = useForm<ContactFormValues>({
+        resolver: zodResolver(contactFormSchema),
         defaultValues: {
             name: "",
             email: "",
@@ -34,9 +50,22 @@ export default function ContactUs() {
         },
     });
 
-    const onSubmit = (data: any) => {
-        console.log("Form Data:", data);
-        // Add your submission logic here
+    // 4. Handle Submit
+    const onSubmit = async (data: ContactFormValues) => {
+        try {
+            console.log("Form Data:", data);
+
+            // Simulate API call
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+
+            // Show Success Toast
+            toast.success("Message sent successfully! We'll get back to you soon.");
+
+            // Reset form
+            form.reset();
+        } catch (error) {
+            toast.error("Something went wrong. Please try again.");
+        }
     };
 
     return (
@@ -120,20 +149,20 @@ export default function ContactUs() {
 
                             <Button
                                 type="submit"
-                                className="bg-[#1d3d24] hover:bg-[#152e1b] text-white px-8 h-12 rounded-full text-base"
+                                disabled={form.formState.isSubmitting}
+                                className="bg-[#1d3d24] hover:bg-[#152e1b] text-white px-8 h-12 rounded-full text-base disabled:opacity-70"
                             >
-                                Send Message
+                                {form.formState.isSubmitting ? "Sending..." : "Send Message"}
                             </Button>
                         </form>
                     </Form>
                 </div>
 
                 {/* RIGHT SIDE: INFO CARD */}
-                <div className="lg:col-span-5 xl:col-span-4 bg-[#1d3d24] text-white p-8 md:p-12 rounded-[2.5rem] space-y-10">
-
-                    {/* Address */}
+                <div className="lg:col-span-5 xl:col-span-4 bg-[#1d3d24] text-white p-8 md:p-12 rounded-[2.5rem] space-y-10 shadow-xl">
                     <section className="space-y-3">
                         <h3 className="text-xl font-bold flex items-center gap-2">
+                            <MapPin className="text-yellow-500" size={20} />
                             Address
                         </h3>
                         <p className="text-gray-300 leading-relaxed">
@@ -141,25 +170,28 @@ export default function ContactUs() {
                         </p>
                     </section>
 
-                    {/* Contact */}
                     <section className="space-y-3">
-                        <h3 className="text-xl font-bold">Contact</h3>
+                        <h3 className="text-xl font-bold flex items-center gap-2">
+                            <Phone className="text-yellow-500" size={20} />
+                            Contact
+                        </h3>
                         <div className="space-y-1 text-gray-300">
                             <p>Phone : +0123-456-789</p>
                             <p>Email : example@gmail.com</p>
                         </div>
                     </section>
 
-                    {/* Open Time */}
                     <section className="space-y-3">
-                        <h3 className="text-xl font-bold">Open Time</h3>
+                        <h3 className="text-xl font-bold flex items-center gap-2">
+                            <Clock className="text-yellow-500" size={20} />
+                            Open Time
+                        </h3>
                         <div className="space-y-1 text-gray-300">
                             <p>Monday - Friday : 10:00 - 20:00</p>
                             <p>Saturday - Sunday : 11:00 - 18:00</p>
                         </div>
                     </section>
 
-                    {/* Stay Connected */}
                     <section className="space-y-5">
                         <h3 className="text-xl font-bold text-yellow-500">Stay Connected</h3>
                         <div className="flex flex-wrap gap-4">
@@ -167,21 +199,18 @@ export default function ContactUs() {
                             <SocialIcon icon={<Twitter size={20} />} />
                             <SocialIcon icon={<Instagram size={20} />} />
                             <SocialIcon icon={<Youtube size={20} />} />
-                            {/* Optional: Pinterest or LinkedIn */}
                             <SocialIcon icon={<Mail size={20} />} />
                         </div>
                     </section>
                 </div>
-
             </div>
         </div>
     );
 }
 
-// Helper Component for Social Icons
 function SocialIcon({ icon }: { icon: React.ReactNode }) {
     return (
-        <button className="w-10 h-10 flex items-center justify-center rounded-full bg-[#eab308] hover:bg-yellow-500 transition-colors text-[#1d3d24]">
+        <button className="w-10 h-10 flex items-center justify-center rounded-full bg-[#eab308] hover:bg-yellow-500 transition-transform hover:scale-110 text-[#1d3d24]">
             {icon}
         </button>
     );

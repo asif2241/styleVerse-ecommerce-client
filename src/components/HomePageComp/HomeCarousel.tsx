@@ -13,6 +13,7 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel";
 
+
 // Import your images
 import Image1 from "@/assets/images/1676.jpg"; // Replace with your image paths
 import Image2 from "@/assets/images/1985.jpg";

@@ -19,6 +19,7 @@ import { useAllCategoryQuery } from "@/redux/features/category/category.api";
 import { Plus, Trash2, Loader2 } from "lucide-react";
 import { FileMetadata } from "@/hooks/use-file-upload";
 import { IProduct } from "@/types/product.interface";
+import StylePulseLoader from "../shared/StylePulseLoader";
 
 const GENDER = ["MEN", "WOMEN", "UNISEX"] as const;
 
@@ -42,6 +43,8 @@ export default function EditProductFormClient({ initialProduct }: { initialProdu
     const [updateProduct, { isLoading: updating }] = useUpdateProductMutation();
     const { data: categoryData } = useAllCategoryQuery(undefined);
 
+
+
     // Use the initialProduct to set the initial state directly
     const [images, setImages] = useState<(File | FileMetadata)[]>(
         (initialProduct.images || []).map((url, index) => ({
@@ -52,6 +55,7 @@ export default function EditProductFormClient({ initialProduct }: { initialProdu
             type: "image/webp"
         }))
     );
+
     const form = useForm<ProductFormValues>({
         resolver: zodResolver(FormInputSchema),
         defaultValues: {
@@ -76,6 +80,10 @@ export default function EditProductFormClient({ initialProduct }: { initialProdu
         name: "sizes",
         control: form.control,
     });
+
+    if (updating) {
+        return <StylePulseLoader size="lg" text="Updating Product..." />;
+    }
 
     const handleSubmit = async (data: ProductFormValues) => {
         const toastId = toast.loading("Updating StyleVerse product...");

@@ -1,7 +1,12 @@
 // config/dashboardInfo.ts (or just inside the component)
-import { LayoutDashboard, UserCog, PlusCircle, Settings } from "lucide-react";
+import { LayoutDashboard, UserCog, PlusCircle, Settings, Home } from "lucide-react";
 
 export const dashboardLinks = [
+  {
+    label: "Home",
+    href: "/",
+    icon: Home
+  },
   {
     label: "Overview",
     href: "/admin/dashboard",
@@ -33,9 +38,9 @@ export const dashboardLinks = [
     icon: Settings
   },
   // You can easily add more here later
-  {
-    label: "Settings",
-    href: "/admin/dashboard/settings",
-    icon: Settings,
-  },
+  // {
+  //   label: "Settings",
+  //   href: "/admin/dashboard/settings",
+  //   icon: Settings,
+  // },
 ];

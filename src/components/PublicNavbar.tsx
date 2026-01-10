@@ -27,6 +27,7 @@ import { useAppDispatch } from "@/redux/hook";
 import { Role } from "@/types/user.interface";
 import { useAllCategoryQuery } from "@/redux/features/category/category.api";
 import { Category } from "@/types";
+import { cn } from "@/lib/utils";
 
 export default function PublicNavbar() {
   const id = useId();
@@ -220,33 +221,20 @@ export default function PublicNavbar() {
 
       {/* DESKTOP NAVIGATION */}
       <div className="border-t py-2 max-md:hidden">
-        <NavigationMenu>
-          <NavigationMenuList className="gap-4">
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link href="/about" className={navigationMenuTriggerStyle()}>
-                  About Us
-                </Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
 
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link href="/contact" className={navigationMenuTriggerStyle()}>
-                  Contact Us
-                </Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuLink asChild>
-                <Link href="/products" className={navigationMenuTriggerStyle()}>
-                  All Items
-                </Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
 
-            {/* navigation to admin dashboard */}
-            {/* {(user?.role === Role.SUPER_ADMIN || user?.role === Role.ADMIN) && (
+        <div className="flex items-center justify-center gap-6">
+          <Link href="/about" className="font-medium hover:text-primary">
+            About Us
+          </Link>
+          <Link href="/contact" className="font-medium hover:text-primary">
+            Contact Us
+          </Link>
+          <Link href="/products" className="font-medium hover:text-primary">
+            All Items
+          </Link>
+          {/* navigation to admin dashboard */}
+          {/* {(user?.role === Role.SUPER_ADMIN || user?.role === Role.ADMIN) && (
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
                   <Link
@@ -258,8 +246,8 @@ export default function PublicNavbar() {
                 </NavigationMenuLink>
               </NavigationMenuItem>
             )} */}
-            {/* navigation to user dashboard */}
-            {/* {user?.role === Role.USER && (
+          {/* navigation to user dashboard */}
+          {/* {user?.role === Role.USER && (
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
                   <Link
@@ -272,55 +260,61 @@ export default function PublicNavbar() {
               </NavigationMenuItem>
             )} */}
 
-            {/* CATEGORY FILTER LOGIC */}
-            {showCategories && categories?.map((cat) => (
-              <NavigationMenuItem key={cat._id}>
-                {cat.children.length > 0 ? (
-                  <>
-                    <NavigationMenuTrigger className="font-medium">
-                      {cat.name}
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="p-4 grid gap-2 min-w-[200px]">
-                        {/* ALL Category Filter Button */}
-                        <div
-                          role="button"
-                          onClick={() => handleCategoryFilter(cat.name)}
-                          className="cursor-pointer block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground font-semibold text-primary"
-                        >
-                          ALL {cat.name}
-                        </div>
+          {/* CATEGORY FILTER LOGIC - Desktop with Popover */}
+          {showCategories && categories?.map((cat) => (
+            <Popover key={cat._id}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "font-medium px-3 py-2 text-base",
+                    "hover:bg-transparent hover:text-primary",
+                    "data-[state=open]:text-primary data-[state=open]:bg-accent/50",
+                    "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                  )}
+                >
+                  {cat.name}
+                </Button>
+              </PopoverTrigger>
 
-                        <div className="border-b my-2"></div>
-
-                        {/* Child Category Filter Buttons */}
-                        {cat.children.map((child) => (
-                          <div
-                            key={child._id}
-                            role="button"
-                            onClick={() => handleCategoryFilter(child.name)}
-                            className="cursor-pointer block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground text-sm text-muted-foreground"
-                          >
-                            {child.name}
-                          </div>
-                        ))}
-                      </div>
-                    </NavigationMenuContent>
-                  </>
-                ) : (
-                  /* Category with no children */
+              <PopoverContent
+                align="start"
+                sideOffset={6}
+                className="w-64 p-4 shadow-lg border bg-popover text-popover-foreground rounded-xl"
+                avoidCollisions={false}
+              >
+                <div className="grid gap-2">
+                  {/* ALL Category Filter Button */}
                   <div
                     role="button"
                     onClick={() => handleCategoryFilter(cat.name)}
-                    className="cursor-pointer font-medium block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground"
+                    className="cursor-pointer block select-none rounded-md p-3 leading-none transition-colors hover:bg-accent hover:text-accent-foreground font-semibold text-primary"
                   >
-                    {cat.name}
+                    ALL {cat.name}
                   </div>
-                )}
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
+
+                  {cat.children.length > 0 && (
+                    <>
+                      <div className="border-b my-2 border-border" />
+                      {/* Child Category Filter Buttons */}
+                      {cat.children.map((child) => (
+                        <div
+                          key={child._id}
+                          role="button"
+                          onClick={() => handleCategoryFilter(child.name)}
+                          className="cursor-pointer block select-none rounded-md p-3 leading-none transition-colors hover:bg-accent hover:text-accent-foreground text-sm text-muted-foreground"
+                        >
+                          {child.name}
+                        </div>
+                      ))}
+                    </>
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
+          ))}
+
+        </div>
       </div>
     </nav>
   );

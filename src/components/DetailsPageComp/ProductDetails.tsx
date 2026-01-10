@@ -20,6 +20,8 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 import { IProduct } from "@/types/product.interface";
+import { useCartStore } from "@/stores/useCartStore";
+import { toast } from "sonner";
 
 
 
@@ -30,6 +32,27 @@ export default function ProductDetails({ product }: { product: IProduct }) {
     const [quantity, setQuantity] = useState(1);
     // const [mainImage, setMainImage] = useState(product.images[0]);
     const [mainImage, setMainImage] = useState<string | null>(null);
+
+    const { addToCart } = useCartStore()
+
+    const handleAddToCart = () => {
+        if (!selectedSize) {
+            toast.error("Please select a size!");
+            return;
+        }
+
+        addToCart({
+            productId: product._id as string,
+            title: product.title,
+            slug: product.slug,
+            image: product.images[0],
+            price: product.discountPrice ? product.discountPrice : product.price,
+            color: product.color,
+            selectedSize,
+            quantity: 1,
+        });
+
+    };
 
     // ✅ Update main image when product loads
     React.useEffect(() => {
@@ -250,7 +273,9 @@ export default function ProductDetails({ product }: { product: IProduct }) {
                                 <Button
                                     className="flex-1 h-12 text-base font-semibold bg-black hover:bg-gray-800"
                                     disabled={!selectedSize}
+                                    onClick={handleAddToCart}
                                 >
+
                                     Add to Cart
                                 </Button>
 

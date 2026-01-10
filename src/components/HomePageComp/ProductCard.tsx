@@ -32,16 +32,7 @@ const ProductCard = ({ product }: { product: IProduct }) => {
             selectedSize,
             quantity: 1,
         });
-        // console.log({
-        //     productId: product._id,
-        //     title: product.title,
-        //     slug: product.slug,
-        //     image: product.images[0],
-        //     price: product.discountPrice ? product.discountPrice : product.price,
-        //     color: product.color,
-        //     selectedSize,
-        //     quantity: 1,
-        // });
+
     };
 
 
@@ -160,7 +151,6 @@ const ProductCard = ({ product }: { product: IProduct }) => {
             <CardFooter className="p-4 pt-0">
                 <Button
                     className="w-full"
-
                     onClick={handleAddToCart}
                 >
                     <ShoppingCart className="h-4 w-4 mr-2" />

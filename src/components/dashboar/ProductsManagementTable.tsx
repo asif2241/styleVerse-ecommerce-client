@@ -15,6 +15,7 @@ import {
     Loader2,
     PackageOpen
 } from "lucide-react";
+import Swal from "sweetalert2"
 
 import {
     Table,
@@ -34,8 +35,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
+
 
 // Assuming these are your API hooks from StyleVerse Redux setup
 import { IProduct } from "@/types/product.interface";
@@ -111,17 +111,55 @@ export default function ProductsManagementTable() {
 
     const products = data?.data || [];
 
+    // const handleDelete = async (productId: string) => {
+    //     console.log(productId);
+    //     if (!confirm("Are you sure? This will remove the product from StyleVerse permanently.")) return;
+
+    //     try {
+    //         await deleteProduct({ productId }).unwrap();
+    //         toast.success("Product deleted successfully");
+    //     } catch (err: any) {
+    //         toast.error(err?.data?.message || "Failed to delete product");
+    //     }
+    // };
+
+
     const handleDelete = async (productId: string) => {
         console.log(productId);
-        if (!confirm("Are you sure? This will remove the product from StyleVerse permanently.")) return;
 
-        try {
-            await deleteProduct({ productId }).unwrap();
-            toast.success("Product deleted successfully");
-        } catch (err: any) {
-            toast.error(err?.data?.message || "Failed to delete product");
+        const result = await Swal.fire({
+            title: "Are you sure?",
+            text: "This will remove the product from StyleVerse permanently.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "Cancel"
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await deleteProduct({ productId }).unwrap();
+
+                Swal.fire({
+                    title: "Deleted!",
+                    text: "Product has been successfully deleted.",
+                    icon: "success"
+                }).then(() => {
+                    // nothing to do here 
+                });
+
+            } catch (err: any) {
+                Swal.fire({
+                    title: "Failed!",
+                    text: err?.message || "Failed to delete product due to a server error.",
+                    icon: "error"
+                });
+            }
         }
     };
+
 
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -165,7 +203,7 @@ export default function ProductsManagementTable() {
                     </p>
                 </div>
                 <Button asChild className="bg-zinc-900 text-white hover:bg-zinc-800">
-                    <Link href="/admin/products/create">
+                    <Link href="/admin/dashboard/add-product">
                         <Plus className="mr-2 h-4 w-4" /> New Product
                     </Link>
                 </Button>

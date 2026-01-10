@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils"; // Assuming you have shadcn's utility, or use standard clsx
+import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 import { dashboardLinks } from "@/config/sidebar.config";
 
@@ -11,7 +11,7 @@ interface SidebarProps {
     setIsOpen: (value: boolean) => void;
 }
 
-const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
+const AdminSidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
     const pathname = usePathname();
 
     return (
@@ -28,7 +28,12 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
             {/* Sidebar Container */}
             <aside
                 className={cn(
-                    "fixed top-0 left-0 z-50 h-screen w-64 bg-white border-r border-gray-200 transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto",
+                    // Base width and background
+                    "h-screen w-64 bg-white border-r border-gray-200 transition-transform duration-300 ease-in-out",
+                    // Mobile: Fixed positioning
+                    "fixed top-0 left-0 z-50 lg:translate-x-0",
+                    // Desktop: Remove fixed, use relative height
+                    "lg:static lg:h-full",
                     isOpen ? "translate-x-0" : "-translate-x-full"
                 )}
             >
@@ -41,21 +46,18 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
                 </div>
 
                 {/* Navigation Links */}
-                <nav className="space-y-1 px-3 py-6">
+                <nav className="h-[calc(100vh-64px)] overflow-y-auto space-y-1 px-3 py-6">
                     {dashboardLinks.map((link) => {
                         const Icon = link.icon;
-                        // Check if current path starts with the link href (for nested active states)
-                        // Or exact match for dashboard home
-                        const isActive =
-                            link.href === "/admin/dashboard"
-                                ? pathname === link.href
-                                : pathname.startsWith(link.href);
+                        const isActive = link.href === "/admin/dashboard"
+                            ? pathname === link.href
+                            : pathname.startsWith(link.href);
 
                         return (
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                onClick={() => setIsOpen(false)} // Close sidebar on mobile click
+                                onClick={() => setIsOpen(false)}
                                 className={cn(
                                     "flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-md transition-colors",
                                     isActive
@@ -74,4 +76,4 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
     );
 };
 
-export default Sidebar;
+export default AdminSidebar;

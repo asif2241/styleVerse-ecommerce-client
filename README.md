@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# STYLEVERSE ECOMMERCE (FRONTEND)
 
-## Getting Started
+#### The **StyleVerse** is a premium, full-stack e-commerce platform designed for a modern shopping experience. The system provides a seamless journey from product discovery to secure checkout, featuring a sophisticated Admin dashboard, role-based access control, and a focus on high-end fashion aesthetics.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Core Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **⚡ Modern & Responsive UI:**Built with React, TailwindCSS, and ShadCN UI, ensuring a clean, responsive experience across all devices.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **🔐 Seamless Authentication Flow:** Fully integrated login, signup, and logout experience using RTK Query, with state persistence and automatic user data fetching.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **🔍 Real-Time Tracking System:** Customers can monitor their order lifecycle from "Pending" to "Delivered" with a detailed status movement history.
 
-## Learn More
+- **⚙️ Admin Oversight:**: A powerful Admin role with the ability to view and manage all users and products and ensure the smooth operation of the system.
 
-To learn more about Next.js, take a look at the following resources:
+- **Role-Based Dashboards:**: Dedicated, secure interfaces for Admins (inventory & user management) and Customers (order history & profile management)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **📩 Real-Time Status Updates:**: Displays updated parcel information instantly using Redux Toolkit caching and automatic re-fetching.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **🛍️ Intelligent Product Discovery:**: Advanced filtering system allowing users to browse by categories, sub-categories, and price points with real-time URL state synchronization.
 
-## Deploy on Vercel
+- **🛒 Dynamic Shopping Cart:**:A smooth, persistent cart experience with real-time quantity updates and localized storage for guest users.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## ⚙️ **Technologies Used:**
+
+- **Framework:**: Next.js (App Router)
+- **State Management:**: Redux Toolkit and Zustand
+- **Form Handling:**: React Hook Form + Zod Validation
+- **UI & Styling:**: Tailwind CSS + ShadCN UI , OriginUI
+- **Authentication:**: JWT, Role-based auth
+- **Data Fetching:**: RTK Query (Auto-refetching & Caching)
+- **Build & Deployment:**Vercel (Frontend Hosting)
+
+---
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/asif2241/styleVerse-ecommerce-client.git
+   cd styleverse-ecommerce
+   ```
+2. **Install The Dependencies**
+   ```bash
+   npm install
+   ```
+3. **To Run The Project**
+   ```bash
+   npm run dev
+   ```
+
+### LIVE LINK : https://styleverse-client.vercel.app/

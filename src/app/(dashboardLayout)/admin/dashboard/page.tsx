@@ -37,7 +37,7 @@ const dashboardStats: StatCardProps[] = [
     },
     {
         title: 'Total Categories',
-        value: '18',
+        value: '12',
         icon: ListChecks,
         color: 'bg-blue-500',
         href: '/admin/dashboard/add-category',

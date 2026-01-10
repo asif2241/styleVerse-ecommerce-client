@@ -98,7 +98,7 @@ export default function CreateCategoryForm() {
                                 <FormLabel className="font-bold uppercase text-[10px] tracking-widest text-gray-500">Parent Category (Optional)</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="rounded-none focus:ring-black">
+                                        <SelectTrigger className="rounded-none focus:ring-black w-full">
                                             <SelectValue placeholder="Select a parent category" />
                                         </SelectTrigger>
                                     </FormControl>

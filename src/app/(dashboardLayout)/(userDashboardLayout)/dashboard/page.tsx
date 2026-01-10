@@ -1,11 +1,15 @@
 import Link from 'next/link';
 import { ShoppingBag, User, Heart, Settings } from 'lucide-react';
 import { RecentOrdersSection } from '@/components/shared/RecentOrderSection';
+import { useGetMeQuery } from '@/redux/features/user/user.api';
+import { spawn } from 'child_process';
 
 export default function UserDashboardPage() {
+
+
     return (
         <div className="space-y-8">
-            <h1 className="text-3xl font-bold text-gray-900 border-b pb-4">Welcome Back, [User Name]!</h1>
+            <h1 className="text-3xl font-bold text-gray-900 border-b pb-4">Welcome Back </h1>
 
             <p className="text-lg text-gray-600">
                 Here you can view your recent orders, manage your profile, and update your preferences.
@@ -37,10 +41,10 @@ export default function UserDashboardPage() {
             {/* Recent Orders Snippet */}
             <section className="pt-4">
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-semibold text-gray-800">Your Recent Activity</h2>
-                    <Link href="/dashboard/order-history" className="text-sm font-medium text-indigo-600 hover:text-indigo-800">
+                    {/* <h2 className="text-xl font-semibold text-gray-800">Your Recent Activity</h2> */}
+                    {/* <Link href="/dashboard/order-history" className="text-sm font-medium text-indigo-600 hover:text-indigo-800">
                         View All &rarr;
-                    </Link>
+                    </Link> */}
                 </div>
 
                 {/* Mock Recent Order Item */}

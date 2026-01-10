@@ -1,6 +1,5 @@
+import StylePulseLoader from "@/components/shared/StylePulseLoader";
 
-const AdminDashboardLoading = () => {
-    return <p>Loading..........</p>;
-};
-
-export default AdminDashboardLoading;
+export default function Loading() {
+    return <StylePulseLoader text="Loading Dashboard Page..." size="lg" />;
+}

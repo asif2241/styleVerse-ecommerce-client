@@ -13,6 +13,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import PaginationComp from "./PaginationComp";
 import { OrderSummaryStats } from "./OrderStats";
+import StylePulseLoader from "./StylePulseLoader";
 
 export default function AllOrdersTable() {
     const router = useRouter();
@@ -28,6 +29,10 @@ export default function AllOrdersTable() {
     };
 
     const { data, isLoading } = useGetAllOrdersQuery(query);
+
+    if (isLoading) {
+        return <StylePulseLoader size="lg" text="Fetching your orders..." />;
+    }
 
     const orders = data?.data || [];
 
