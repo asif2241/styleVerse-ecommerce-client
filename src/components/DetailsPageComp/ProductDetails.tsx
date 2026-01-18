@@ -22,6 +22,7 @@ import {
 import { IProduct } from "@/types/product.interface";
 import { useCartStore } from "@/stores/useCartStore";
 import { toast } from "sonner";
+import Link from "next/link";
 
 
 
@@ -222,9 +223,9 @@ export default function ProductDetails({ product }: { product: IProduct }) {
                             <div>
                                 <div className="flex justify-between items-center mb-3">
                                     <h3 className="text-sm font-medium text-gray-900">Select Size</h3>
-                                    <button className="text-xs text-gray-500 underline hover:text-black">
+                                    <Link href={"/size-chart"} className="text-xs text-gray-500 underline hover:text-black">
                                         Size Guide
-                                    </button>
+                                    </Link>
                                 </div>
 
                                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">

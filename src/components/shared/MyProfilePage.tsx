@@ -10,16 +10,18 @@ import {
     Camera,
     Briefcase
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useGetMeQuery } from "@/redux/features/user/user.api";
+import Link from "next/link";
+import ProfilePageSkeleton from "./skeletons/ProfilePageSkeleton";
+import { Role } from "@/types/user.interface";
 
 export default function MyProfilePage() {
     const { data, isLoading } = useGetMeQuery(undefined);
 
-    if (isLoading) return <div className="p-10 text-center text-gray-500 font-medium">Loading profile...</div>;
+    if (isLoading) return <ProfilePageSkeleton></ProfilePageSkeleton>
 
     const user = data?.data;
 
@@ -32,9 +34,9 @@ export default function MyProfilePage() {
         <div className="max-w-4xl mx-auto p-4 md:p-10 space-y-8 bg-gray-50/50 min-h-screen">
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold tracking-tight text-gray-900">My Profile</h1>
-                <Button className="gap-2 bg-white text-zinc-900 border shadow-sm hover:bg-zinc-50 rounded-lg px-5">
+                <Link href={user.role === Role.SUPER_ADMIN || user.role === Role.ADMIN ? `/admin/dashboard/edit-profile` : `edit-profile`} className="gap-2 bg-white text-zinc-900 flex justify-center items-center border shadow-sm hover:bg-zinc-50 rounded-sm px-5">
                     <Edit3 size={16} /> Edit
-                </Button>
+                </Link>
             </div>
 
             {/* 1. Identity Card */}

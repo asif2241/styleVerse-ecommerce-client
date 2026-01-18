@@ -24,6 +24,7 @@ export interface IUser {
     phone?: string;
     address?: string;
     role: Role;
+    profileImage?: string,
     isActive?: isActive;
     isBlocked?: boolean;
     blockedBy?: string;

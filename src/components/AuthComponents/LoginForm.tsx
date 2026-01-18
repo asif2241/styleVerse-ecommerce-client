@@ -37,8 +37,8 @@ export function LoginForm({ className, ...props }: React.HTMLAttributes<HTMLDivE
     const form = useForm<LoginValues>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
-            email: "super@gmail.com", // Development default
-            password: "12345678",    // Development default
+            email: "",
+            password: "",
         },
     });
 
@@ -116,6 +116,8 @@ export function LoginForm({ className, ...props }: React.HTMLAttributes<HTMLDivE
                         )}
                     />
 
+
+
                     <Button
                         disabled={isLoading}
                         type="submit"
@@ -126,6 +128,15 @@ export function LoginForm({ className, ...props }: React.HTMLAttributes<HTMLDivE
                         ) : (
                             "LOGIN TO STYLEVERSE"
                         )}
+                    </Button>
+
+                    <Button
+                        onClick={() => window.open(`${process.env.NEXT_PUBLIC_BASE_API_URL}/auth/google`)}
+                        type="button"
+                        variant="outline"
+                        className="w-full cursor-pointer"
+                    >
+                        Login with Google
                     </Button>
 
                     <div className="text-center text-sm">

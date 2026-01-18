@@ -5,16 +5,6 @@ import { useId, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
 import {
   Popover,
   PopoverContent,
@@ -32,6 +22,8 @@ import { cn } from "@/lib/utils";
 export default function PublicNavbar() {
   const id = useId();
   const [openCategory, setOpenCategory] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openDesktopPopover, setOpenDesktopPopover] = useState<string | null>(null);
 
   // Next.js Navigation Hooks
   const router = useRouter();
@@ -87,33 +79,35 @@ export default function PublicNavbar() {
         {/* Left side */}
         <div className="flex flex-1 items-center gap-2">
           {/* Mobile menu */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                className="group size-8 md:hidden"
-                size="icon"
-                variant="ghost"
+          <Popover open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>            <PopoverTrigger asChild>
+            <Button
+              className="group size-8 md:hidden"
+              size="icon"
+              variant="ghost"
+            >
+              <svg
+                className="pointer-events-none"
+                fill="none"
+                height={16}
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                width={16}
               >
-                <svg
-                  className="pointer-events-none"
-                  fill="none"
-                  height={16}
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  width={16}
-                >
-                  <path d="M4 6H20" />
-                  <path d="M4 12H20" />
-                  <path d="M4 18H20" />
-                </svg>
-              </Button>
-            </PopoverTrigger>
+                <path d="M4 6H20" />
+                <path d="M4 12H20" />
+                <path d="M4 18H20" />
+              </svg>
+            </Button>
+          </PopoverTrigger>
 
             <PopoverContent align="start" className="w-56 p-2 md:hidden">
               <div className="flex flex-col gap-2">
+                <Link href="/" className="w-full text-left font-semibold py-1">
+                  Home
+                </Link>
                 <Link href="/about" className="w-full text-left font-semibold py-1">
                   About Us
                 </Link>
@@ -123,11 +117,7 @@ export default function PublicNavbar() {
                 <Link href="/contact" className="w-full text-left font-semibold py-1">
                   Contact Us
                 </Link>
-                {user?.role === Role.SUPER_ADMIN && (
-                  <Link href={"/admin/dashboard"} className="w-full text-left font-semibold py-1 text-primary">
-                    Dashboard
-                  </Link>
-                )}
+
                 <div className="border-t my-2"></div>
 
                 {showCategories && categories?.map((cat) => (
@@ -147,7 +137,11 @@ export default function PublicNavbar() {
                       <div className="ml-3 flex flex-col gap-1 border-l pl-3">
                         {/* Mobile "ALL" Filter */}
                         <button
-                          onClick={() => handleCategoryFilter(cat.name)}
+                          onClick={() => {
+                            handleCategoryFilter(cat.name);
+                            setOpenCategory(null);           // ← close subcategory
+                            setMobileMenuOpen(false);        // ← close whole mobile menu!
+                          }}
                           className="text-left text-primary font-medium"
                         >
                           ALL {cat.name}
@@ -157,7 +151,11 @@ export default function PublicNavbar() {
                         {cat.children.map((child) => (
                           <button
                             key={child._id}
-                            onClick={() => handleCategoryFilter(child.name)}
+                            onClick={() => {
+                              handleCategoryFilter(child.name);
+                              setOpenCategory(null);
+                              setMobileMenuOpen(false);
+                            }}
                             className="text-left text-sm text-muted-foreground hover:text-primary"
                           >
                             {child.name}
@@ -177,20 +175,7 @@ export default function PublicNavbar() {
           </Link>
         </div>
 
-        {/* Center Search
-        <div className="grow">
-          <div className="relative mx-auto w-full max-w-xs">
-            <Input
-              className="peer h-8 ps-8 pe-10"
-              id={id}
-              placeholder="Search..."
-              type="search"
-            />
-            <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-2 text-muted-foreground/80">
-              <SearchIcon size={16} />
-            </div>
-          </div>
-        </div> */}
+
 
         {/* Right Side */}
         <div className="flex flex-1 items-center justify-end md:gap-5 gap-4">
@@ -224,6 +209,9 @@ export default function PublicNavbar() {
 
 
         <div className="flex items-center justify-center gap-6">
+          <Link href="/" className="font-medium hover:text-primary">
+            Home
+          </Link>
           <Link href="/about" className="font-medium hover:text-primary">
             About Us
           </Link>
@@ -233,45 +221,26 @@ export default function PublicNavbar() {
           <Link href="/products" className="font-medium hover:text-primary">
             All Items
           </Link>
-          {/* navigation to admin dashboard */}
-          {/* {(user?.role === Role.SUPER_ADMIN || user?.role === Role.ADMIN) && (
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link
-                    href="/admin/dashboard"
-                    className={`${navigationMenuTriggerStyle()} font-semibold text-primary`}
-                  >
-                    Dashboard
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            )} */}
-          {/* navigation to user dashboard */}
-          {/* {user?.role === Role.USER && (
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link
-                    href="/dashboard"
-                    className={`${navigationMenuTriggerStyle()} font-semibold text-primary`}
-                  >
-                    Dashboard
-                  </Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            )} */}
+
 
           {/* CATEGORY FILTER LOGIC - Desktop with Popover */}
           {showCategories && categories?.map((cat) => (
-            <Popover key={cat._id}>
+            <Popover
+              key={cat._id}
+              open={openDesktopPopover === cat._id}
+              onOpenChange={(open) => {
+                if (!open) setOpenDesktopPopover(null);
+              }}
+            >
               <PopoverTrigger asChild>
                 <Button
                   variant="ghost"
                   className={cn(
                     "font-medium px-3 py-2 text-base",
                     "hover:bg-transparent hover:text-primary",
-                    "data-[state=open]:text-primary data-[state=open]:bg-accent/50",
-                    "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                    openDesktopPopover === cat._id && "text-primary bg-accent/50"
                   )}
+                  onClick={() => setOpenDesktopPopover(cat._id)}
                 >
                   {cat.name}
                 </Button>
@@ -287,7 +256,10 @@ export default function PublicNavbar() {
                   {/* ALL Category Filter Button */}
                   <div
                     role="button"
-                    onClick={() => handleCategoryFilter(cat.name)}
+                    onClick={() => {
+                      handleCategoryFilter(cat.name);
+                      setOpenDesktopPopover(null); // ← close!
+                    }}
                     className="cursor-pointer block select-none rounded-md p-3 leading-none transition-colors hover:bg-accent hover:text-accent-foreground font-semibold text-primary"
                   >
                     ALL {cat.name}
@@ -296,12 +268,14 @@ export default function PublicNavbar() {
                   {cat.children.length > 0 && (
                     <>
                       <div className="border-b my-2 border-border" />
-                      {/* Child Category Filter Buttons */}
                       {cat.children.map((child) => (
                         <div
                           key={child._id}
                           role="button"
-                          onClick={() => handleCategoryFilter(child.name)}
+                          onClick={() => {
+                            handleCategoryFilter(child.name);
+                            setOpenDesktopPopover(null); // ← close!
+                          }}
                           className="cursor-pointer block select-none rounded-md p-3 leading-none transition-colors hover:bg-accent hover:text-accent-foreground text-sm text-muted-foreground"
                         >
                           {child.name}

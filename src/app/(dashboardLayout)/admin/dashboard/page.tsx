@@ -18,7 +18,7 @@ const dashboardStats: StatCardProps[] = [
         value: '1,250',
         icon: Users,
         color: 'bg-indigo-500',
-        href: '/admin/dashboard/manage-user',
+        href: '/admin/dashboard/manage-users',
     },
     {
         title: 'Pending Orders',
@@ -33,7 +33,7 @@ const dashboardStats: StatCardProps[] = [
         icon: DollarSign,
         color: 'bg-green-500',
         // No specific page, links to general analytics
-        href: '/admin/dashboard/analytics',
+        href: '/admin/dashboard/manage-orders',
     },
     {
         title: 'Total Categories',

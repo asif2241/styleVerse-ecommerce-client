@@ -34,7 +34,7 @@ export default function AllItemsSection() {
     const sort = searchParams.get("sort") || "-createdAt";
     const minPrice = searchParams.get("minPrice") || "";
     const maxPrice = searchParams.get("maxPrice") || "";
-    const limit = searchParams.get("limit") || "12";
+    const limit = searchParams.get("limit") || "10";
     const search = searchParams.get("search") || "";
     const page = searchParams.get("page") || "1";
 
@@ -210,7 +210,7 @@ export default function AllItemsSection() {
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="12">12</SelectItem>
+                                    <SelectItem value="10">10</SelectItem>
                                     <SelectItem value="24">24</SelectItem>
                                     <SelectItem value="48">48</SelectItem>
                                 </SelectContent>
